@@ -1,0 +1,37 @@
+- name: Hammerhead 🖖
+  hosts: localhost
+  become: yes
+  tasks:
+    # Task to install btop
+    - name: Install btop
+      ansible.builtin.package:
+        name: btop
+        state: present
+
+    # Task to install fastfetch
+    - name: Install fastfetch
+      ansible.builtin.package:
+        name: fastfetch
+        state: present
+
+    # Task to install fzf
+    - name: Install fzf
+      ansible.builtin.package:
+        name: fzf
+        state: present
+
+    # Task to install nvm
+    - name: Install nvm
+      ansible.builtin.shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+      args:
+        creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm/nvm.sh"
+
+    # Task to load nvm and install npm
+    - name: Install npm using nvm
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install --lts
+      args:
+        creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm/versions/node"
