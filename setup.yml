@@ -2,20 +2,24 @@
   hosts: localhost
   become: yes
   tasks:
-    - name: Install btop
+    - name: Install btop ⚙️
       ansible.builtin.package:
         name: btop
         state: present
 
-    - name: Install fastfetch
+    - name: Install fastfetch 🪄
       ansible.builtin.package:
         name: fastfetch
         state: present
 
-    - name: Install fzf
+    - name: Install fzf 🔎
       ansible.builtin.package:
         name: fzf
         state: present
+
+    - name: Install tmux 💻
+      ansible.builtin.shell: |
+        apt install tmux -y
 
     - name: Install nvm
       ansible.builtin.shell: |
