@@ -2,32 +2,27 @@
   hosts: localhost
   become: yes
   tasks:
-    # Task to install btop
     - name: Install btop
       ansible.builtin.package:
         name: btop
         state: present
 
-    # Task to install fastfetch
     - name: Install fastfetch
       ansible.builtin.package:
         name: fastfetch
         state: present
 
-    # Task to install fzf
     - name: Install fzf
       ansible.builtin.package:
         name: fzf
         state: present
 
-    # Task to install nvm
     - name: Install nvm
       ansible.builtin.shell: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
       args:
         creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm/nvm.sh"
 
-    # Task to load nvm and install npm
     - name: Install npm using nvm
       ansible.builtin.shell: |
         export NVM_DIR="{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm"
@@ -35,3 +30,10 @@
         nvm install --lts
       args:
         creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm/versions/node"
+
+    # https://github.com/catppuccin/gnome-terminal
+    - name: Install catpuccin in gnome terminal
+      ansible.builtin.shell: |
+        curl -L https://raw.githubusercontent.com/catppuccin/gnome-terminal/v1.0.0/install.py | python3 -
+      # making sure we install this in the current profile and not for root
+      become: no
