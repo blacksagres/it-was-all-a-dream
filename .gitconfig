@@ -1,0 +1,28 @@
+[user]
+	name = Geraldo dos Santos
+	email = geraldo.nogueirabs@gmail.com
+[fetch]
+	prune = true
+[diff]
+	colorMoved = zebra
+[pull]
+	rebase = false
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[alias]
+	st     		= status
+	co     		= checkout
+	cot    		= checkout test
+	cob    		= checkout -b
+	del    		= branch -D 
+	rename 		= branch -m
+	rhead  		= reset HEAD~
+	plog = log --pretty=format:'%h%x09%an%x09%ad%x09%s'
+	pretty-logs = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --branches
+	fco = "!git branch | fzf | xargs git checkout"
+
+[push]
+	autoSetupRemote = true
