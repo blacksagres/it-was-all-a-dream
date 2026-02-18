@@ -26,38 +26,24 @@
         rm -rf ~/.config/tmux/plugins/catppuccin
       become: no
 
-    - name: Catpuccin for tmux 🐈‍⬛
+    - name: Remove existing .tmux folder, if any 🧨
       ansible.builtin.shell: |
-        mkdir -p ~/.config/tmux/plugins/catppuccin
-        rm -rf ~/.config/tmux/plugins/catppuccin/tmux
-        git clone -b v2.1.3 https://github.com/catppuccin/tmux.git ~/.config/tmux/plugins/catppuccin/tmux
+        rm -rf ~/.tmux
       become: no
 
-    # Thanks tmux - https://tmuxcheatsheet.com/theming-and-customizing/
-    - name: Configuring tmux 🐈‍⬛
-      ansible.builtin.blockinfile:
-        path: "{{ lookup('ansible.builtin.env', 'HOME') }}/.tmux.conf"
-        block: |
-          # Options to make tmux more pleasant
-          set -g mouse on
-          set -g default-terminal "tmux-256color"
+    - name: Oh my tmux! 🐈‍⬛
+      ansible.builtin.shell: |
+        git clone https://github.com/gpakosz/.tmux.git ~/.tmux
+      become: no
 
-          # Configure the catppuccin plugin
-          set -g @catppuccin_flavor "mocha" # latte, frappe, macchiato, or mocha
-          set -g @catppuccin_window_status_style "rounded" # basic, rounded, slanted, custom, or none
+    - name: Create symlink for .tmux.conf 🐈‍⬛
+      ansible.builtin.shell: |
+        ln -sf ~/.tmux/.tmux.conf ~/.tmux.conf
+      become: no
 
-          # Load catppuccin
-          run ~/.config/tmux/plugins/catppuccin/tmux/catppuccin.tmux
-
-          # Make the status line pretty and add some modules
-          set -g status-right-length 100
-          set -g status-left-length 100
-          set -g status-left ""
-          set -g status-right "#{E:@catppuccin_status_application}"
-          set -agF status-right "#{E:@catppuccin_status_cpu}"
-          set -ag status-right "#{E:@catppuccin_status_session}"
-          set -ag status-right "#{E:@catppuccin_status_uptime}"
-          set -agF status-right "#{E:@catppuccin_status_battery}"
+    - name: Reload tmux configuration 🐈‍⬛
+      ansible.builtin.shell: |
+        tmux source-file ~/.tmux.conf
       become: no
 
     - name: Install nvm
