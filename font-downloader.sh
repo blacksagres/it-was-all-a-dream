@@ -1,28 +1,54 @@
 #!/bin/bash
-# Nerd Fonts Downloader for Pop!_OS
+# Nerd Fonts Downloader
 # source: https://gist.github.com/matthewjberger/7dd7e079f282f8138a9dc3b045ebefa0
 
-# Check for required dependencies
-if ! command -v wget &> /dev/null; then
-    echo "❌ Error: wget is not installed."
-    echo "On Pop!_OS, you can install it with:"
-    echo "sudo apt install wget"
-    exit 1
+OS="$(uname -s)"
+
+# --- Dependency checks ---
+
+if [[ "$OS" == "Linux" ]]; then
+    if ! command -v wget &> /dev/null && ! command -v curl &> /dev/null; then
+        echo "❌ Error: neither wget nor curl is installed."
+        echo "Install one with: sudo apt install wget"
+        exit 1
+    fi
+
+    if ! command -v unzip &> /dev/null; then
+        echo "❌ Error: unzip is not installed."
+        echo "Install it with: sudo apt install unzip"
+        exit 1
+    fi
+
+    if ! command -v fc-cache &> /dev/null; then
+        echo "⚠️  Warning: fc-cache not found. Font cache will not be updated."
+        echo "Install it with: sudo apt install fontconfig"
+    fi
+elif [[ "$OS" == "Darwin" ]]; then
+    if ! command -v curl &> /dev/null; then
+        echo "❌ Error: curl is not installed."
+        exit 1
+    fi
+
+    if ! command -v unzip &> /dev/null; then
+        echo "❌ Error: unzip is not installed."
+        echo "Install it with: brew install unzip"
+        exit 1
+    fi
 fi
 
-if ! command -v unzip &> /dev/null; then
-    echo "❌ Error: unzip is not installed."
-    echo "On Pop!_OS, you can install it with:"
-    echo "sudo apt install unzip"
-    exit 1
-fi
+# --- Download helper ---
 
-# Check for fontconfig (for fc-cache)
-if ! command -v fc-cache &> /dev/null; then
-    echo "⚠️  Warning: fc-cache not found. Font cache will not be updated."
-    echo "On Pop!_OS, you can install it with:"
-    echo "sudo apt install fontconfig"
-fi
+download_file() {
+    local url="$1"
+    local output="$2"
+    if command -v wget &> /dev/null; then
+        wget -q --show-progress -O "$output" "$url"
+    else
+        curl -L --progress-bar -o "$output" "$url"
+    fi
+}
+
+# --- Font list ---
 
 declare -a fonts=(
     BitstreamVeraSansMono
@@ -45,24 +71,25 @@ declare -a fonts=(
     UbuntuMono
 )
 
-# Get the latest version automatically
-if command -v curl &> /dev/null; then
-    echo "🔍 Checking for latest Nerd Fonts version..."
-    version=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
-    if [[ -z "$version" ]]; then
-        echo "⚠️  Could not fetch latest version, using fallback version 3.3.0"
-        version='3.3.0'
-    else
-        echo "✅ Latest version found: v$version"
-    fi
-else
-    echo "⚠️  curl not found, using fallback version 3.3.0"
+# --- Resolve latest version ---
+
+echo "🔍 Checking for latest Nerd Fonts version..."
+version=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep '"tag_name"' | sed -E 's/.*"v([^"]+)".*/\1/')
+if [[ -z "$version" ]]; then
+    echo "⚠️  Could not fetch latest version, using fallback version 3.3.0"
     version='3.3.0'
+else
+    echo "✅ Latest version found: v$version"
 fi
 
-fonts_dir="${HOME}/.local/share/fonts"
+# --- Font directory ---
 
-# Create fonts directory if it doesn't exist
+if [[ "$OS" == "Darwin" ]]; then
+    fonts_dir="${HOME}/Library/Fonts"
+else
+    fonts_dir="${HOME}/.local/share/fonts"
+fi
+
 if [[ ! -d "$fonts_dir" ]]; then
     echo "📁 Creating fonts directory at $fonts_dir"
     mkdir -p "$fonts_dir"
@@ -78,8 +105,8 @@ for font in "${fonts[@]}"; do
     zip_file="${font}.zip"
     download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${version}/${zip_file}"
     echo "📥 Downloading $font..."
-    
-    if ! wget -q --show-progress "$download_url"; then
+
+    if ! download_file "$download_url" "$zip_file"; then
         echo "❌ Failed to download $font, skipping..."
         fail_count=$((fail_count + 1))
         continue
@@ -109,19 +136,21 @@ if [[ $windows_files -gt 0 ]]; then
     find "$fonts_dir" -name '*Windows Compatible*' -delete
 fi
 
-# Update font cache if available
-if command -v fc-cache &> /dev/null; then
-    echo "🔄 Updating font cache..."
-    fc-cache -fv
-else
-    echo "ℹ️  Skipping font cache update (fc-cache not available)"
-fi
+# Update font cache (Linux only)
+if [[ "$OS" == "Linux" ]]; then
+    if command -v fc-cache &> /dev/null; then
+        echo "🔄 Updating font cache..."
+        fc-cache -fv
+    else
+        echo "ℹ️  Skipping font cache update (fc-cache not available)"
+    fi
 
-# Set default monospace font for GNOME (Pop!_OS uses GNOME)
-if command -v gsettings &> /dev/null; then
-    echo "🎨 Setting FiraCode Nerd Font as default monospace font..."
-    gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font 11'
-    echo "💡 You can change this in GNOME Tweaks if desired"
+    # Set default monospace font for GNOME
+    if command -v gsettings &> /dev/null; then
+        echo "🎨 Setting FiraCode Nerd Font as default monospace font..."
+        gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font 11'
+        echo "💡 You can change this in GNOME Tweaks if desired"
+    fi
 fi
 
 echo ""

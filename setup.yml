@@ -1,50 +1,76 @@
-- name: Hammerhead Debian 🖖
+- name: Dev Machine Setup 🖖
   hosts: localhost
-  become: yes
   tasks:
-    - name: Install btop ⚙️
-      ansible.builtin.package:
+    # --- Debian/Ubuntu ---
+
+    - name: Install btop (Debian) ⚙️
+      ansible.builtin.apt:
         name: btop
         state: present
+      become: yes
+      when: ansible_os_family == "Debian"
 
-    - name: Install fastfetch 🪄
-      ansible.builtin.package:
+    - name: Install fastfetch (Debian) 🪄
+      ansible.builtin.apt:
         name: fastfetch
         state: present
+      become: yes
+      when: ansible_os_family == "Debian"
 
-    - name: Install fzf 🔎
-      ansible.builtin.package:
+    - name: Install fzf (Debian) 🔎
+      ansible.builtin.apt:
         name: fzf
         state: present
+      become: yes
+      when: ansible_os_family == "Debian"
 
-    - name: Install tmux 💻
-      ansible.builtin.shell: |
-        apt install tmux -y
+    - name: Install tmux (Debian) 💻
+      ansible.builtin.apt:
+        name: tmux
+        state: present
+      become: yes
+      when: ansible_os_family == "Debian"
+
+    # --- macOS ---
+
+    - name: Install btop (macOS) ⚙️
+      ansible.builtin.shell: brew install btop
+      when: ansible_os_family == "Darwin"
+
+    - name: Install fastfetch (macOS) 🪄
+      ansible.builtin.shell: brew install fastfetch
+      when: ansible_os_family == "Darwin"
+
+    - name: Install fzf (macOS) 🔎
+      ansible.builtin.shell: brew install fzf
+      when: ansible_os_family == "Darwin"
+
+    - name: Install tmux (macOS) 💻
+      ansible.builtin.shell: brew install tmux
+      when: ansible_os_family == "Darwin"
+
+    # --- Cross-platform ---
 
     - name: Remove existing catpuccin folder, if any 🧨
       ansible.builtin.shell: |
         rm -rf ~/.config/tmux/plugins/catppuccin
-      become: no
 
     - name: Remove existing .tmux folder, if any 🧨
       ansible.builtin.shell: |
         rm -rf ~/.tmux
-      become: no
 
     - name: Oh my tmux! 🐈‍⬛
       ansible.builtin.shell: |
         git clone https://github.com/gpakosz/.tmux.git ~/.tmux
-      become: no
 
     - name: Create symlink for .tmux.conf 🐈‍⬛
       ansible.builtin.shell: |
         ln -sf ~/.tmux/.tmux.conf ~/.tmux.conf
-      become: no
 
     - name: Reload tmux configuration 🐈‍⬛
       ansible.builtin.shell: |
         tmux source-file ~/.tmux.conf
-      become: no
+      ignore_errors: yes
 
     - name: Install nvm
       ansible.builtin.shell: |
