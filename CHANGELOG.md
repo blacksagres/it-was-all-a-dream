@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/blacksagres/it-was-all-a-dream/compare/v1.1.0...v1.2.0) (2026-02-19)
+
+
+### Features
+
+* adding my git aliases ([fb1a425](https://github.com/blacksagres/it-was-all-a-dream/commit/fb1a42598f8136c2db6d60c61d8817e735111eab))
+
 ## [1.1.0](https://github.com/blacksagres/it-was-all-a-dream/compare/v1.0.0...v1.1.0) (2026-02-19)
 
 
