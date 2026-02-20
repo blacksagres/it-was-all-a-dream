@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/blacksagres/it-was-all-a-dream/compare/v1.2.0...v1.2.1) (2026-02-20)
+
+
+### Bug Fixes
+
+* make setup file idempotent ([0a1afe0](https://github.com/blacksagres/it-was-all-a-dream/commit/0a1afe0a67818ce7ebf4f7969b7fb5dcb59aafc5))
+
 ## [1.2.0](https://github.com/blacksagres/it-was-all-a-dream/compare/v1.1.0...v1.2.0) (2026-02-19)
 
 
