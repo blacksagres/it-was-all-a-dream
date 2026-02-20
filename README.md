@@ -1,21 +1,18 @@
-# It was all a dream
+# It was all a dream 😴
 
-Keeps everything I like when setting up a new dev machine.
+I used to manually setup my machine.
 
 ## Requirements
 
 ### Debian/Ubuntu
 
-- Ansible (find the installer for your OS)
+- Ansible
+- Git
 
 ### macOS
 
-- [Homebrew](https://brew.sh)
-- Ansible via Homebrew:
-
-```bash
-brew install ansible
-```
+- Ansible
+- Git
 
 ## Setting everything up
 

@@ -52,20 +52,28 @@
     # --- Cross-platform ---
 
     - name: Remove existing catpuccin folder, if any 🧨
-      ansible.builtin.shell: |
-        rm -rf ~/.config/tmux/plugins/catppuccin
+      ansible.builtin.file:
+        path: ~/.config/tmux/plugins/catppuccin
+        state: absent
 
     - name: Remove existing .tmux folder, if any 🧨
-      ansible.builtin.shell: |
-        rm -rf ~/.tmux
+      ansible.builtin.file:
+        path: ~/.tmux
+        state: absent
 
     - name: Oh my tmux! 🐈‍⬛
-      ansible.builtin.shell: |
-        git clone https://github.com/gpakosz/.tmux.git ~/.tmux
+      ansible.builtin.git:
+        repo: https://github.com/gpakosz/.tmux.git
+        dest: ~/.tmux
+        version: HEAD
+        force: yes
 
     - name: Create symlink for .tmux.conf 🐈‍⬛
-      ansible.builtin.shell: |
-        ln -sf ~/.tmux/.tmux.conf ~/.tmux.conf
+      ansible.builtin.file:
+        src: ~/.tmux/.tmux.conf
+        dest: ~/.tmux.conf
+        state: link
+        force: yes
 
     - name: Reload tmux configuration 🐈‍⬛
       ansible.builtin.shell: |
