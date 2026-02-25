@@ -34,19 +34,27 @@
     # --- macOS ---
 
     - name: Install btop (macOS) ⚙️
-      ansible.builtin.shell: brew install btop
+      community.general.homebrew:
+        name: btop
+        state: present
       when: ansible_os_family == "Darwin"
 
     - name: Install fastfetch (macOS) 🪄
-      ansible.builtin.shell: brew install fastfetch
+      community.general.homebrew:
+        name: fastfetch
+        state: present
       when: ansible_os_family == "Darwin"
 
     - name: Install fzf (macOS) 🔎
-      ansible.builtin.shell: brew install fzf
+      community.general.homebrew:
+        name: fzf
+        state: present
       when: ansible_os_family == "Darwin"
 
     - name: Install tmux (macOS) 💻
-      ansible.builtin.shell: brew install tmux
+      community.general.homebrew:
+        name: tmux
+        state: present
       when: ansible_os_family == "Darwin"
 
     # --- Cross-platform ---
@@ -89,12 +97,14 @@
       ansible.builtin.shell: |
         tmux source-file ~/.tmux.conf
       ignore_errors: yes
+      changed_when: false
 
     - name: Install nvm
       ansible.builtin.shell: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
       args:
         creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm/nvm.sh"
+      changed_when: false
 
     - name: Install npm using nvm
       ansible.builtin.shell: |
@@ -103,6 +113,7 @@
         nvm install --lts
       args:
         creates: "{{ lookup('ansible.builtin.env', 'HOME') }}/.nvm/versions/node"
+      changed_when: false
 
     - name: Write git aliases file 🔗
       ansible.builtin.copy:
@@ -121,7 +132,6 @@
                   fco             = "!git branch | fzf | xargs git checkout"
                   stash-select    = !git stash list | fzf | awk -F: "{print \\$1}" | xargs git stash pop
                   my-prs          = !gh pr list -A $(git config user.name) | fzf | awk '{print $1}' | xargs gh pr view --web
-                  open-deployed-pr = !gh pr list -A $(git config user.name) | fzf | awk '{print $1}' | xargs -I {PR_ID} open https://pr-{PR_ID}-app.tst.luscii.com/en/mockLogin
                   clc             = "!git log -1 --format='%H' | tr -d '\\n' | { command -v pbcopy >/dev/null && pbcopy || command -v xclip >/dev/null && xclip -selection clipboard || xsel --clipboard --input; }"
 
     - name: Include git aliases in global gitconfig 🔗
