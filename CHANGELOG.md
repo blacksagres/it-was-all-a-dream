@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/blacksagres/it-was-all-a-dream/compare/v1.2.1...v1.3.0) (2026-02-25)
+
+
+### Features
+
+* use tmux gruvbox and enable full mouse support ([aca7c24](https://github.com/blacksagres/it-was-all-a-dream/commit/aca7c2484a5baea43043d2a257345a2dd730765f))
+
 ## [1.2.1](https://github.com/blacksagres/it-was-all-a-dream/compare/v1.2.0...v1.2.1) (2026-02-20)
 
 
