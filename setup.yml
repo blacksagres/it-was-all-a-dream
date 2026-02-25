@@ -51,31 +51,41 @@
 
     # --- Cross-platform ---
 
-    - name: Remove existing catpuccin folder, if any 🧨
-      ansible.builtin.file:
-        path: ~/.config/tmux/plugins/catppuccin
-        state: absent
-
     - name: Remove existing .tmux folder, if any 🧨
       ansible.builtin.file:
         path: ~/.tmux
         state: absent
 
-    - name: Oh my tmux! 🐈‍⬛
+    - name: Install TPM (Tmux Plugin Manager) 🔌
       ansible.builtin.git:
-        repo: https://github.com/gpakosz/.tmux.git
-        dest: ~/.tmux
+        repo: https://github.com/tmux-plugins/tpm.git
+        dest: ~/.tmux/plugins/tpm
         version: HEAD
-        force: yes
 
-    - name: Create symlink for .tmux.conf 🐈‍⬛
-      ansible.builtin.file:
-        src: ~/.tmux/.tmux.conf
+    - name: Write .tmux.conf with gruvbox theme and mouse support 🎨
+      ansible.builtin.copy:
         dest: ~/.tmux.conf
-        state: link
-        force: yes
+        content: |
+          set -g @plugin 'tmux-plugins/tpm'
+          set -g @plugin 'tmux-plugins/tmux-sensible'
+          set -g @plugin 'egel/tmux-gruvbox'
+          set -g @tmux-gruvbox 'dark'
+          set -g mouse on
+          run '~/.tmux/plugins/tpm/tpm'
 
-    - name: Reload tmux configuration 🐈‍⬛
+    - name: Install tmux-sensible plugin 🔌
+      ansible.builtin.git:
+        repo: https://github.com/tmux-plugins/tmux-sensible.git
+        dest: ~/.tmux/plugins/tmux-sensible
+        version: HEAD
+
+    - name: Install tmux-gruvbox plugin 🎨
+      ansible.builtin.git:
+        repo: https://github.com/egel/tmux-gruvbox.git
+        dest: ~/.tmux/plugins/tmux-gruvbox
+        version: HEAD
+
+    - name: Reload tmux configuration 🎨
       ansible.builtin.shell: |
         tmux source-file ~/.tmux.conf
       ignore_errors: yes
