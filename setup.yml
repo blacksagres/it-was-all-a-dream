@@ -3,6 +3,26 @@
   tasks:
     # --- Debian/Ubuntu ---
 
+    - name: Update apt package index
+      ansible.builtin.apt:
+        update_cache: yes
+      become: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install curl (required for nvm)
+      ansible.builtin.apt:
+        name: curl
+        state: present
+      become: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Remove system Node.js to prevent nvm conflicts
+      ansible.builtin.apt:
+        name: nodejs
+        state: absent
+      become: yes
+      when: ansible_os_family == "Debian"
+
     - name: Install btop (Debian) ⚙️
       ansible.builtin.apt:
         name: btop
@@ -10,16 +30,26 @@
       become: yes
       when: ansible_os_family == "Debian"
 
-    - name: Install fastfetch (Debian) 🪄
-      ansible.builtin.apt:
-        name: fastfetch
-        state: present
+    - name: Install fastfetch via GitHub (Debian) 🪄
+      ansible.builtin.shell: |
+        curl -sL https://github.com/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-amd64.deb -o /tmp/fastfetch.deb
+        sudo dpkg -i /tmp/fastfetch.deb
+        rm /tmp/fastfetch.deb
+      args:
+        creates: /usr/bin/fastfetch
       become: yes
       when: ansible_os_family == "Debian"
 
     - name: Install fzf (Debian) 🔎
       ansible.builtin.apt:
         name: fzf
+        state: present
+      become: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install git alias dependencies (Debian)
+      ansible.builtin.apt:
+        name: ["xclip", "gh"]
         state: present
       become: yes
       when: ansible_os_family == "Debian"
